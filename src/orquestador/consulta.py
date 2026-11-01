@@ -107,6 +107,7 @@ def incidentes(raiz: Path, mes: str) -> list[dict]:
         salida.append(
             {
                 "id": hallazgo.get("hallazgo_id"),
+                "mes": hallazgo.get("mes") or mes,
                 "comentario": hallazgo.get("comentario_anonimizado") or "",
                 "sintesis": hallazgo.get("sintesis") or "",
                 "comentarios": _comentarios(hallazgo),

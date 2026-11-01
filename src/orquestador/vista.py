@@ -120,14 +120,15 @@ def html_pagina() -> str:
   #por-mes, #tipificacion, #historico, #backlog, #excluidos { overflow-x: auto; min-width: 0; max-width: 100%; -webkit-overflow-scrolling: touch; }
   #por-mes table, #historico table, #backlog table, #excluidos table { width: max-content; min-width: 100%; }
   #tipificacion table { width: 100%; min-width: 0; }
-  #tipificacion td.sintesis, #tipificacion th:first-child { white-space: normal; }
+  #tipificacion td.sintesis, #tipificacion th:nth-child(2) { white-space: normal; }
   #tipificacion button.hallazgo {
     display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3;
     overflow: hidden; width: 100%; margin: 0; padding: 0; border: 0; background: none;
     color: inherit; font: inherit; text-align: left; pointer-events: none;
   }
-  #tipificacion td:nth-child(4), #tipificacion th:nth-child(4),
+  #tipificacion td:nth-child(1), #tipificacion th:nth-child(1),
   #tipificacion td:nth-child(5), #tipificacion th:nth-child(5),
+  #tipificacion td:nth-child(6), #tipificacion th:nth-child(6),
   #tipificacion td.ojo, #tipificacion th.ojo, #tipificacion td:has(.decision) { white-space: nowrap; }
   #tipificacion td .decision { min-width: 13.5rem; }
   table { border-collapse: collapse; margin-top: 12px; }
@@ -206,6 +207,7 @@ def html_pagina() -> str:
     .tarjeta .cabeza-tarjeta { display: flex; gap: 12px; align-items: flex-start; }
     .tarjeta .texto { margin: 0; font-weight: 500; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
     .tarjeta .ticket { color: var(--md-sys-color-primary); font-weight: 500; text-decoration: none; }
+    .tarjeta .fecha { color: var(--md-sys-color-on-surface-variant); }
     .tarjeta .meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--md-sys-color-on-surface-variant); }
     .tarjeta .meta .ojo { margin-left: auto; }
     .ordenar-tarjetas, .marcar-todos { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
@@ -429,7 +431,7 @@ function botonHallazgos() {
 }
 function filaHallazgos(item) {
   const lista = lineasHallazgo(item).map((texto) => `<li>${esc(texto)}</li>`).join("");
-  return `<tr class="acordeon" hidden><td colspan="7"><p class="origen">Hallazgos</p><ul>${lista}</ul></td></tr>`;
+  return `<tr class="acordeon" hidden><td colspan="8"><p class="origen">Hallazgos</p><ul>${lista}</ul></td></tr>`;
 }
 function botonOjo() {
   return `<md-icon-button type="button" data-ojo aria-label="Ver comentarios" aria-pressed="false"><md-icon>visibility</md-icon></md-icon-button>`;
@@ -655,15 +657,18 @@ function tablaTipificacion(items) {
   if (!pendientes.length) return "<p class=\\"vacio\\">Los que se quedan están en Tipificados y los que se van, en Excluidos.</p>";
   const cuerpo = pendientes.map((item) => {
     const titulo = item.sintesis || item.comentario;
-    return `<tr><td class="sintesis"><button type="button" class="hallazgo" data-id="${esc(item.id)}" data-abrir="1">${esc(titulo)}</button></td><td>${esc(item.modulo || "")}</td><td>${esc(item.etiqueta || "")}</td><td><span class="luz md-typescale-label-medium ${esc(item.criticidad)}">${esc(item.criticidad || "sin dato")}</span></td><td>${item.conteo ?? 0}</td><td class="ojo">${botonHallazgos()}</td><td><div class="decision"><md-filled-button type="button" data-id="${esc(item.id)}" data-resultado="aceptado" data-motivo="${esc(item.motivo || "")}">Se queda</md-filled-button><md-outlined-button type="button" data-id="${esc(item.id)}" data-resultado="rechazado" data-motivo="${esc(item.motivo || "")}">Se va</md-outlined-button></div></td></tr>${filaHallazgos(item)}`;
+    return `<tr><td>${esc(textoFecha(item))}</td><td class="sintesis"><button type="button" class="hallazgo" data-id="${esc(item.id)}" data-abrir="1">${esc(titulo)}</button></td><td>${esc(item.modulo || "")}</td><td>${esc(item.etiqueta || "")}</td><td><span class="luz md-typescale-label-medium ${esc(item.criticidad)}">${esc(item.criticidad || "sin dato")}</span></td><td>${item.conteo ?? 0}</td><td class="ojo">${botonHallazgos()}</td><td><div class="decision"><md-filled-button type="button" data-id="${esc(item.id)}" data-resultado="aceptado" data-motivo="${esc(item.motivo || "")}">Se queda</md-filled-button><md-outlined-button type="button" data-id="${esc(item.id)}" data-resultado="rechazado" data-motivo="${esc(item.motivo || "")}">Se va</md-outlined-button></div></td></tr>${filaHallazgos(item)}`;
   }).join("");
   const tarjetas = pendientes.map(tarjetaTipificacion).join("");
-  return `<table><thead><tr><th>Síntesis</th><th>Módulo</th><th>Etiqueta</th><th>Criticidad</th><th>Veces</th><th class="ojo"></th><th></th></tr></thead><tbody>${cuerpo}</tbody></table><div class="tarjetas">${tarjetas}</div>`;
+  return `<table><thead><tr><th>Fecha</th><th>Síntesis</th><th>Módulo</th><th>Etiqueta</th><th>Criticidad</th><th>Veces</th><th class="ojo"></th><th></th></tr></thead><tbody>${cuerpo}</tbody></table><div class="tarjetas">${tarjetas}</div>`;
+}
+function textoFecha(item) {
+  return item.mes ? nombreMes(item.mes) : "";
 }
 function tarjetaTipificacion(item) {
   const titulo = item.sintesis || item.comentario || "";
   const lista = lineasHallazgo(item).map((texto) => `<li>${esc(texto)}</li>`).join("");
-  return `<article class="tarjeta"><button type="button" class="hallazgo" data-id="${esc(item.id)}" data-abrir="1">${esc(titulo)}</button><div class="meta md-typescale-label-medium"><span class="luz ${esc(item.criticidad)}">${esc(item.criticidad || "sin dato")}</span><span>${item.conteo ?? 0}</span><span>${esc(item.modulo || "Sin definir")}</span><span>${esc(item.etiqueta || "Sin definir")}</span><span class="ojo">${botonHallazgos()}</span></div><div class="detalle" hidden><p class="origen">Hallazgos</p><ul>${lista}</ul></div></article>`;
+  return `<article class="tarjeta"><span class="fecha md-typescale-label-medium">${esc(textoFecha(item))}</span><button type="button" class="hallazgo" data-id="${esc(item.id)}" data-abrir="1">${esc(titulo)}</button><div class="meta md-typescale-label-medium"><span class="luz ${esc(item.criticidad)}">${esc(item.criticidad || "sin dato")}</span><span>${item.conteo ?? 0}</span><span>${esc(item.modulo || "Sin definir")}</span><span>${esc(item.etiqueta || "Sin definir")}</span><span class="ojo">${botonHallazgos()}</span></div><div class="detalle" hidden><p class="origen">Hallazgos</p><ul>${lista}</ul></div></article>`;
 }
 async function ponerOpciones(select, valores, actual) {
   const elegido = actual || "";
