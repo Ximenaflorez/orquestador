@@ -1,0 +1,103 @@
+﻿Pre-entrega 5: Mapa de Herramientas y Plan de Adopción (Secciones 3 y 6)
+Alumna: Ximena Álvarez Flórez | Perfil: UX/UI B2B Lead | Proceso: Consolidación de métricas UX y tipificación de feedback cualitativo B2B
+PARTE 1: Mapa de Herramientas y Arquitectura (Sección 3)
+1. Revisión de la Matriz de Priorización
+Se confirma la viabilidad del proceso para un piloto (Impacto Medio/Alto, Esfuerzo Bajo/Medio) bajo tres criterios formales:
+Densidad de decisión: Alta. Clasificación mensual y repetitiva de 3,907 registros
+Disponibilidad de contexto (Data Readiness): Alta. La información proviene directamente del libro estructurado feedback_response.xlsx dividido en 3 pestañas temáticas (Creación de Vacantes, Catálogo, Gestión de Vacantes, V) 
+Criterio de éxito medible: Definido a priori (Tasa de finalización > 85%, Latencia < 3 min, Costo < $3 USD).
+2. Asignación y Justificación de Herramientas
+Elegida - LangGraph (Motor Principal): Lo elegí porque este proceso tiene que seguir un paso a paso muy ordenado y sin improvisar. LangGraph me permite armar ese camino claro: primero el Agente 1 realiza la ingesta multi-pestaña y el cálculo exacto de métricas (CSAT/CES por módulo); luego pasa los textos al Agente 2 para clasificar las quejas. Además, me permite colocar reglas claras (aristas condicionales): por ejemplo, si la IA no está muy segura (confianza < 70%), la queja no se adivina, sino que se me redirige para revisión humana.
+Descartada - CrewAI: Innecesaria. El análisis de VoC no exige deliberación entre múltiples roles; exige un apego estricto a una única taxonomía (SKILL.md). Dividir esto en múltiples agentes conversando agregaría latencia, tokens y riesgo de alucinación sin aportar nuevo criterio.
+Descartada - Claude Code / Gemini CLI: Inviables para producción. Se requiere ejecución desatendida por lotes (Batch Processing a las 6:00 AM post-ETL de Superset), no un asistente reactivo de terminal de escritorio.
+
+
+
+
+
+3. Diagrama de Flujo Estructurado (LangGraph) (se realiza diagrama con mermaid.live)
+
+-1904992235212895600180975
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[NODO 1: Ingesta Multi-pestaña] Reads feedback_response.xlsx (3 pestañas: Creación, Catálogo, Gestión,). Condición: Filtra B2C y descarta ~1,980 filas de ruido plano (., N, nada, OK) [NODO 2: Agente Cuantitativo] Calcula CSAT y CES por módulo y consolida alertas de calidad.
+[NODO 3: Analista VoC (LLM)] Procesa los ~1,900 comentarios con carga cualitativa real, aplica SKILL.md, anonimiza PII y asigna criticidad 
+Condición: ¿Confianza < 70%? -> [REVISIÓN HUMANA]. ¿>= 70%? -> Avanza.
+[NODO 4: Reporte] Ensambla el reporte Markdown unificado.
+[NODO 5: Gatekeeper MCP] Pausa la ejecución. Condición: ¿Comité aproba? -> [CREA TICKET JIRA]. ¿Rechaza? -> [ACTUALIZA SKILL (Memoria [REINCIDENTE])].
+PARTE 2: Plan de Adopción y Gestión del Cambio (Sección 6)
+1. Roadmap Estratégico (NOW - NEXT - LATER)
+Etapa
+Qué se valida
+Supervisión Humana
+Criterio para avanzar de etapa
+NOW
+Prototipo y precisión de la taxonomía en las 3 pestañas de la matriz 
+100% (Shadow Mode): Líder UX audita todo el reporte antes del comité.
+Tasa de Finalización sostenida > 85% sin correcciones manuales de etiquetas.
+NEXT
+Reducción del Time-to-escalation (de 30 días a 24 horas).
+Por Umbral: Solo se auditan registros con confianza < 70%.
+Cero incidentes de falsa alarma técnica durante 2 meses consecutivos.
+LATER
+Escalado a otros flujos de datos B2B.
+Por excepción (Audit): Revisión aleatoria del 5% de los logs.
+Trazabilidad y permisos en Jira/Azure estabilizados y documentados.
+2. Comunicación Diferenciada (Mitigación de Resistencia)
+A Quienes Aprueban Presupuesto (CFO / Product Owner)
+Mensaje de ROI Equilibrado: "El costo operativo de la célula es de máximo $3 USD en tokens de modelo y 30 minutos de supervisión de la Líder UX por ciclo mensual. A cambio, obtenemos un balance altamente positivo: recuperamos 4 horas de trabajo estratégico directo y eliminamos la clasificación errónea de aproximadamente 195 registros mensuales (correspondientes al 5% de error manual por fatiga visual al revisar las 3,907 filas de las 3 pestañas de la matriz). Evitar estos 195 errores previene el desperdicio de horas de ingeniería en investigar problemas mal priorizados."
+Al Equipo Operativo (UX / Producto):
+Mensaje de Empoderamiento: "El agente asume la carpintería de filtrar el 50% de ruido plano (., nada, OK) y clasificar los datos a las 6:00 AM, no las decisiones. El comité tripartito mantiene el control total sobre qué pasa al backlog. Las horas liberadas las usaremos para diseñar Service Blueprints y entrevistar clientes Enterprise." 
+A la Dirección (C-Level):
+Mensaje de Gobernanza: "Innovación con riesgo cero. El agente opera aislado de internet, anonimiza PII por diseño, guarda un registro inmutable de cada decisión y cuenta con un protocolo de apagado instantáneo (Kill-Switch)."
+3. Mecanismo de Salida (Protocolo Kill-Switch)
+El plan de contingencia es un protocolo técnico y comunicacional concreto:
+Señal de alerta: Superar un 20% de Override Rate (correcciones manuales realizadas por la Líder UX) en un solo mes, o fallo de autenticación en la herramienta MCP.
+Pausa y Rollback: La Líder UX desactiva el grafo en la interfaz de orquestación (LangGraph/n8n) y se emite una notificación automática por correo al equipo: "Fallback a Proceso Manual".
+Continuidad de Negocio: Al conservar intacto el archivo fuente feedback_response.xlsx, el equipo simplemente abre la matriz en Excel y retoma el análisis tradicional. El flujo de trabajo de Magneto nunca se detiene.
+
+
+

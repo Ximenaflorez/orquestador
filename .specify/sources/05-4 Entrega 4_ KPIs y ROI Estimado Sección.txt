@@ -1,0 +1,40 @@
+﻿Entrega 4: KPIs y ROI Estimado (Sección 
+Alumna: Ximena Álvarez FlórezPerfil: UX/UI B2B Lead Proceso: Consolidación de métricas UX y tipificación de feedback B2B
+Ajustes de Iteración (Actualización de Guardrails)
+Respondiendo a la necesidad de blindar el flujo de errores identificada en la etapa anterior, se definen los siguientes protocolos:
+Fallas de validación y sincronización (Batch Processing): Dado que Superset se actualiza mediante procesos ETL en la madrugada y no opera en tiempo real, la ejecución automática de la célula se programa para el día 1 de cada mes a las 6:00 AM para asegurar que los datos estén consolidados. Si la validación de entrada falla (ej. archivo corrupto), se detiene el flujo y se envía de inmediato una alerta automatizada por correo electrónico a la Líder UX. Si la validación de salida falla (ej. el agente inventa una etiqueta fuera de la taxonomía), el sistema dispara un re-procesamiento automático instantáneo (máximo 1 intento). Si vuelve a fallar, se bloquea el traspaso y se notifica por correo. 
+Falta de Log de Auditoría: Si el sistema no genera el registro inmutable con el score de sentimiento y el texto original, se bloquea el token de la herramienta MCP, impidiendo la creación del ticket en Jira/Azure.
+Rechazo del Comité Tripartito y Memoria Histórica: Si el comité rechaza un hallazgo por falta de viabilidad técnica o de negocio, el registro no se elimina. Se etiqueta como [DESCARTADO-ESTRATÉGICO] para actualizar la Skill del agente. Sin embargo, el agente mantiene una base de conocimiento histórico. Si en los reportes de los meses siguientes dos meses el agente detecta que los usuarios siguen reportando este mismo dolor repetidamente, lo vuelve a escalar al comité pero le inyecta la etiqueta [REINCIDENTE]. Esto advierte al equipo humano que, aunque el problema fue descartado anteriormente, la fricción persiste en el tiempo y el aumento de volumen justifica reevaluar su priorización. 
+1. Definición de KPIs y Umbrales
+Para abandonar la evaluación subjetiva y medir objetivamente el desempeño de la célula híbrida frente al procesamiento manual, se fijan los siguientes indicadores de antemano:
+KPI 1: Latencia (Velocidad de ejecución)
+Definición: Tiempo total transcurrido desde que se suben los archivos de Analytics, Superset y Tally hasta que el agente devuelve la tabla de métricas y la lista tipificada de dolores.
+Umbral fijado: No puede superar los 3 minutos por ciclo mensual de reporte.
+KPI 1: Latencia (Velocidad de ejecución)
+Definición: Tiempo total transcurrido desde que el agente se activa a las 6:00 AM (leyendo los archivos ya actualizados de Analytics, Superset y Tally) hasta que devuelve la tabla de métricas y la lista tipificada de dolores.
+Umbral fijado: No puede superar los 3 minutos por ciclo mensual de reporte.
+
+KPI 2: Tasa de finalización (Autonomía y Precisión)
+Definición: Porcentaje de comentarios y quejas cualitativas que el Agente 2 (VoC) clasifica correctamente con la etiqueta ([BUG], [UX], etc.) y el módulo adecuado, sin que la Líder UX deba corregir la categoría manualmente.
+Umbral mínimo aceptable: 85%. Si es menor, indica que la ambigüedad en los comentarios de los usuarios requiere una actualización urgente en las reglas del documento SKILL.md.
+KPI 3: Costo por tarea (Esfuerzo Híbrido)
+Definición: Costo combinado de la infraestructura (llamadas a la API del modelo / tokens) más el tiempo de dedicación humana para la revisión de los datos.
+Umbral fijado (Techo): Máximo $3 USD en tokens + 30 minutos de tiempo humano para supervisión pre-comité por reporte mensual.
+2. Métrica de Alerta de Falla
+Saber que el proceso funciona no es suficiente; se requiere un trigger operativo que indique cuándo detener la automatización antes de inyectar sesgos en el comité.
+Alerta: Incremento del Override Rate (Tasa de corrección humana).
+Condición: Si la Líder UX tiene que modificar manualmente la clasificación de criticidad (ej. pasar de Medio a Crítico) en más del 20% de los hallazgos en un solo mes, se dispara la alerta.
+Acción inmediata: El sistema pausa temporalmente la herramienta de integración con Jira, y se exige una auditoría directa a los logs de ese mes para identificar el patrón cognitivo que está fallando en el Agente 2. Las correcciones se usan para alimentar el Human-Feedback loop y calibrar el agente.
+3. Estimación de ROI (Retorno de Inversión)
+Supuestos explícitos de la estimación:
+Volumen actual: Promedio de 350 registros mensuales de usuarios corporativos en Tally y Superset (respuestas CSAT/CES y campos de texto libre).
+Tiempo operativo manual : 1 mañana completa de trabajo (aprox. 4 a 5 horas mensuales) dedicada exclusivamente a descargar los CSVs, leer el feedback uno por uno, calcular las fórmulas de CSAT/CES y limpiar la información para poder subirla como fuente a NotebookLM.
+Tiempo híbrido (Célula): 3 minutos de latencia del agente + 45 minutos de lectura estratégica, auditoría de las alertas y aprobación en comité por parte de la Líder UX = ~45 minutos mensuales.
+Tasa de error manual: 5% (fatiga visual tras leer cientos de comentarios en una mañana, lo que lleva a agrupar mal los dolores o a pasar métricas B2C a NotebookLM por error).
+A. Tiempo Humano Liberado: Se estima un ahorro operativo directo de 4 horas mensuales en preparación de datos para la Líder UX, pero el impacto real es la reducción drástica de la latencia de comunicación entre el usuario y los tomadores de decisión.
+B. Costo de los Errores Evitados (Mitigación de Churn B2B): En el proceso manual actual, vamos tarde. Un error bloqueante (ej. pantalla en blanco al descartar un candidato) puede pasar semanas afectando a clientes Enterprise antes de ser visto por soporte y llegar a ser escalado como prioridad. Al automatizar la tipificación con la célula, el sistema detecta problemas [Críticos] el día 1 de cada mes. Esto evita la pérdida de clientes corporativos por insatisfacción técnica prolongada y reduce el Time-to-Resolution (tiempo de resolución) de semanas a días.
+C. Destino Estratégico del Tiempo Liberado y Valor de Negocio: Más allá del tiempo ahorrado, la célula híbrida democratiza la Voz del Cliente (VoC) y sortea el aislamiento del comité. Al generar un reporte tipificado, frío y respaldado por datos inmutables, la Líder UX inyecta los dolores de los usuarios de forma asíncrona y directa en el radar del Product Owner. El tiempo liberado se destina a:
+Diseñar y accionar Service Blueprints basados en los hallazgos críticos tempranos.
+Agendar entrevistas a profundidad con los clientes afectados en el mismo mes del incidente, recuperando su confianza antes de que la queja llegue tarde al comité.
+
+

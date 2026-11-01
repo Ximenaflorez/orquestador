@@ -1,0 +1,79 @@
+﻿Entregable: Práctica Guiada Módulo 2 – Ciclo Agéntico y Creación de Skills
+Proceso elegido: Consolidación mensual de métricas UX (CSAT, CES, Superset) y tipificación de feedback cualitativo B2B en Magneto.
+1. Consigna aplicada (Framework Persona-Tarea-Contexto)
+Este es el prompt completo que se envió a la consola:
+[Persona]: Actúa como una analista de UX Research y Data Lead especializada en plataformas B2B. Eres precisa, estructurada y orientada al análisis de métricas y voz del cliente (VoC).
+[Contexto]: Trabajo como Líder UX en Magneto y acabo de recibir los resultados mensuales de satisfacción de usuarios B2B. Tengo métricas cuantitativas dispersas (CSAT, CES, ingresos) y comentarios cualitativos sin procesar recibidos a través de Tally. Necesito consolidar los indicadores clave del mes y tipificar las quejas cualitativas para que sirvan de insumo en el roadmap de producto.
+[Tarea]: Toma los datos crudos del mes que te proporcionaré a continuación y genera un reporte de consolidación estructurado en exactamente tres secciones: 1) Resumen de KPIs Mensuales (calcula o consolida los promedios/totales), 2) Quejas Críticas y Recurrentes Tipificadas (clasifica por módulo o tipo de problema), y 3) Acciones Recomendadas para el Backlog UX. No inventes datos, limítate estrictamente a las notas proporcionadas.
+[Datos crudos del mes]:
+Métricas Tally: Respuestas de CSAT recibidas: 4, 5, 3, 1, 2, 5, 4, 1. Respuestas de CES (esfuerzo de 1 a 7): 6, 2, 7, 3, 6, 2.
+Analítica Analytics/Superset: 1,450 usuarios activos mensuales B2B en el módulo de vacantes. 85 usuarios usaron la nueva herramienta de búsqueda con IA.
+Feedback cualitativo Tally (comentarios libres de usuarios molestos):
+"Puse 1 en CSAT porque al intentar filtrar candidatos por preguntas prefiltro la pantalla se congela y pierdo el avance de la vacante."
+"El sistema me pide calificar el esfuerzo cada que entro al perfil, es molesto."
+"No encuentro dónde ver las métricas de cuántos candidatos han aplicado a mi vacante en Superset, el panel no carga bien."
+"Otra vez falló la carga masiva de perfiles y tuve que hacer la selección manual uno por uno."
+"La herramienta de IA para buscar perfiles es buena, pero los resultados demoran mucho en cargar en la tabla."
+2. Plan del Agente 
+
+. Planificando pasos:
+Extraer y procesar métricas cuantitativas (CSAT, CES) para calcular promedios y porcentajes. Presentar en formato de tabla según las reglas de la Skill.
+Analizar datos de adopción de Superset (MAU B2B y uso de IA).
+Procesar feedback cualitativo de Tally aplicando la taxonomía de tipificación requerida ([BUG], [UX/Usabilidad], [PERFORMANCE]).
+Estructurar el reporte final asegurando que contenga exactamente las 3 secciones solicitadas.
+Imprimir reporte consolidado.
+3. Reporte final obtenido
+1) Resumen de KPIs Mensuales
+Métrica
+Valor Calculado
+Detalles / Tamaño de Muestra (n)
+CSAT (Promedio)
+3.13 / 5.0
+Respuestas: 4, 5, 3, 1, 2, 5, 4, 1 (n=8)
+CSAT (Top-2 Box)
+50.0%
+4 de 8 respuestas con calificación 4 o 5
+CES (Promedio)
+4.33 / 7.0
+Respuestas: 6, 2, 7, 3, 6, 2 (n=6)
+MAU Módulo Vacantes
+1,450 B2B
+Usuarios Activos Mensuales en el periodo
+Adopción Búsqueda IA
+85 usuarios
+~5.86% de adopción respecto a la base MAU
+2) Quejas Críticas y Recurrentes Tipificadas
+[BUG] Bloqueo en prefiltros: La pantalla se congela al intentar filtrar candidatos por preguntas prefiltro, lo que provoca la pérdida del progreso al crear la vacante.
+[UX/Usabilidad] Fricción por Frequency Capping: Interrupción del flujo natural del usuario, ya que el sistema solicita la calificación de esfuerzo (CES) repetidamente al entrar a cada perfil.
+[BUG] Error de renderizado de métricas: El panel de Superset presenta fallas de carga, impidiendo que los usuarios visualicen la cantidad de candidatos aplicados a sus vacantes.
+[BUG] Falla en carga masiva: Intermitencia o fallo completo en la herramienta de carga masiva de perfiles, forzando a los usuarios B2B a un proceso manual uno a uno.
+[PERFORMANCE] Latencia en tabla de IA: Los resultados de búsqueda de perfiles con la herramienta de IA experimentan tiempos de respuesta muy altos antes de renderizar la tabla.
+3) Acciones Recomendadas para el Backlog UX
+Resolución de freeze y persistencia en prefiltros: Priorizar la corrección técnica del bloqueo de pantalla y diseñar un mecanismo de autoguardado para asegurar que el avance de la vacante no se pierda.
+Configuración de reglas de frecuencia para CES: Ajustar la lógica del trigger de Tally para evitar apariciones reiteradas en cada visita a un perfil (establecer umbrales por sesión o usuario).
+Rediseño de acceso a métricas de postulaciones: Mejorar la arquitectura de información para que el conteo de candidatos aplicados sea visible directamente en el flujo de la vacante, reduciendo la dependencia del panel externo de Superset.
+Robustecimiento del flujo de Carga Masiva: Diseñar estados de error claros y mecanismos de reintento, eliminando la necesidad de recurrir a la captura manual individual tras una falla.
+Optimización de respuesta en la tabla de Búsqueda con IA: Diseñar estados intermedios de carga (skeleton loaders o carga progresiva) y revisar el tiempo de respuesta de la base de datos para reducir la fricción de espera.
+4. Evaluación y Análisis del Resultado
+Al revisar la ejecución completa, logré comprobar que delegar el procesamiento de datos brutos a la IA ahorra un tiempo operativo significativo. Verifiqué manualmente los cálculos de CSAT (3.13) y CES (4.33) y son totalmente precisos. El agente logró cruzar la adopción de IA con el MAU (calculando el 5.86% automáticamente) y estructuró las recomendaciones de backlog con un fuerte enfoque de producto, lo cual genera suficiente confianza para usar este reporte en una reunión de priorización real. Además, el agente aplicó el formato de tabla y las etiquetas ([BUG], [PERFORMANCE], etc.) de forma autónoma gracias a la Skill, sin necesidad de recordárselo en la consigna, cumpliendo con la ausencia del "efecto ping-pong".
+Ajuste para futuras iteraciones:
+Noté que en una de mis pruebas preliminares el agente tendía a resumir demasiado u omitir la segunda sección cualitativa. Para evitar esa ambigüedad futura, el prompt demostró ser más sólido al indicar restricciones específicas: "estructurado en exactamente tres secciones" e incluir reglas estrictas de taxonomía directamente en el archivo SKILL.md.
+
+5. Paso Extra: Creación de la Skill
+Archivo: .claude/skills/estilo-reportes/SKILL.md (o GEMINI.md)
+Markdown
+Descripción de activación: Usa esta skill siempre que el usuario te pida analizar, consolidar o generar reportes de métricas de Experiencia de Usuario (UX) o procesar feedback cualitativo de usuarios.
+
+# Criterio Global para Reportes de Experiencia de Usuario (UX B2B)
+
+## Reglas de Ejecución y Estilo
+1. **Tono y Perspectiva:** Responde siempre como Senior UX Researcher/Data Lead B2B. Mantén un lenguaje analítico, neutral y orientado a producto.
+2. **Taxonomía de Tipificación:** Siempre que clasifiques quejas o comentarios cualitativos, usa obligatoriamente estas etiquetas al inicio de la viñeta:
+   - `[BUG]`: Para fallas técnicas, errores de carga o pantallas congeladas.
+   - `[UX/Usabilidad]`: Para fricciones de flujo, accesibilidad o elementos difíciles de encontrar.
+   - `[PERFORMANCE]`: Para problemas de lentitud o tiempos de espera.
+   - `[FEATURE]`: Para solicitudes de funcionalidades nuevas.
+3. **Formato de Métricas:** Muestra los resultados cuantitativos (CSAT, CES, volúmenes
+
+
+

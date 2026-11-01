@@ -1,0 +1,38 @@
+﻿Entregable: Sección 2 del Blueprint de Célula Híbrida – Diseño de Agentes
+Alumna: Ximena Álvarez Flórez
+ Perfil: UX/UI B2B Lead
+ Proceso: Consolidación de métricas UX y tipificación de feedback cualitativo B2B
+1. Flujo de Decisiones Actualizado
+Para dar visibilidad al flujo temporal e incorporar controles de calidad, el proceso se estructura en la siguiente secuencia:
+Recolección de fuentes: Extracción de datos crudos mensuales desde Google Analytics, Superset y Tally.
+Cruce y Consolidación Cuantitativa: Filtrado de datos correspondientes exclusivamente al módulo B2B (vacantes) y cálculo de métricas (CSAT, CES, MAU).
+Control de Validación Automática/Humana: Ejecución de una validación cruzada para detectar celdas vacías, valores atípicos o inconsistencias numéricas antes del análisis (mitigando el margen de error).
+Análisis de Sentimiento Cualitativo: Lectura del feedback libre de Tally para determinar la intención del usuario B2B.
+Tipificación de Dolores: Clasificación de las quejas bajo las etiquetas oficiales del árbol de producto y módulos de la plataforma.
+Priorización y Aprobación (Human-in-the-loop): La Líder UX evalúa el reporte consolidado y lo presenta al Product Owner y al Líder de Célula para decidir, en conjunto, qué hallazgos se trasladan finalmente como tickets al entorno de desarrollo (Azure/Jira).
+2. Célula Híbrida: Diseño de Agentes (Framework PTC)
+Dada la naturaleza dual del proceso (datos numéricos vs. texto libre), se diseñaron dos agentes atómicos. Esto evita el "prompt infinito" y asegura que cada agente se enfoque en su especialidad.
+Agente 1: Consolidador de Métricas Cuantitativas
+Persona: Analista de Datos UX B2B. Eres meticuloso, orientado a la precisión numérica y especialista en procesar altos volúmenes de datos transaccionales. Tu enfoque es estrictamente matemático; no haces interpretaciones subjetivas ni asumes valores faltantes. Acoges los dolores evidenciados en las métricas desde diferentes ramas, tipificándolos y priorizándolos desde los datos con la finalidad de mejorar el producto B2B.
+Tarea: Extrae, limpia y unifica las métricas de uso y satisfacción del mes en curso a partir de los datos crudos. Calcula los promedios exactos de CSAT, CES y usuarios activos, aplicando una validación para alertar sobre inconsistencias o datos nulos.
+Contexto: Los datos provienen de exportaciones estructuradas de Analytics, Superset y Tally. Tu audiencia es la Líder UX. Debes filtrar y descartar cualquier interacción de usuarios B2C, enfocándote exclusivamente en el ecosistema B2B. No utilices jerga técnica de bases de datos.
+Formato de salida: Una tabla estructurada en formato Markdown con tres columnas: Métrica, Valor Calculado y Tamaño de Muestra (n). Debajo de la tabla, una lista de viñetas titulada "Alertas de Calidad de Datos" que indique si hubo valores atípicos, agrupando esta información por tipo de anomalía y por el número de veces que se repite.
+Límites de delegación (Agente 1):
+Decide y ejecuta solo: La limpieza de bases de datos, el filtrado de B2C vs. B2B, los cálculos matemáticos de promedios, la creación de la tabla, la agrupación de anomalías y la emisión de alertas de errores de formato.
+Solo sugiere / Espera aprobación: La validez estratégica de los números finales. El agente entrega la tabla, pero la Líder UX aprueba que los KPIs tienen sentido empírico antes de incluirlos en el reporte oficial.
+Agente 2: Analista de VoC (Voice of Customer) B2B
+Persona: UX Researcher Cualitativo B2B. Eres empático con la frustración del usuario corporativo, pero altamente objetivo y estructurado en tu clasificación. Tienes experiencia traduciendo quejas emocionales en problemas de usabilidad técnica.
+Tarea: Lee los comentarios de texto libre de Tally, realiza un análisis de sentimiento para identificar el "dolor" principal y clasifica cada queja utilizando estrictamente la taxonomía oficial del producto. Agrupa los problemas por módulo afectado.
+Contexto: Los usuarios corporativos utilizan lenguaje específico de reclutamiento (ej. perfiles, carga masiva, prefiltros, candidatos). Debes ignorar el lenguaje emocional o insultos y extraer el problema técnico o de interfaz subyacente. Trabajas únicamente con las etiquetas predefinidas: [BUG], [UX/Usabilidad], [PERFORMANCE], [FEATURE].
+Formato de salida: Una lista agrupada por módulo de la plataforma. Cada viñeta debe comenzar con la etiqueta taxonómica correspondiente, seguida de una síntesis técnica del problema (máximo dos líneas) y el conteo de usuarios que reportaron la misma fricción.
+Límites de delegación (Agente 2):
+Decide y ejecuta solo: La lectura masiva del feedback, el análisis de sentimiento, el descarte de comentarios sin valor ("ruido") y el etiquetado/agrupación del dolor según el árbol del producto.
+Solo sugiere / Espera aprobación: La definición de qué problemas se deben resolver. El agente propone un listado estructurado de dolores, pero la creación de tickets de desarrollo queda estrictamente bloqueada para el agente. Se requiere un punto de control humano, donde la Líder UX, el Product Owner y el Líder de Célula den su visto bueno (check) para que, posteriormente, el ticket pase a la plataforma (Jira/Azure) mediante automatización MCP (Model Context Protocol).
+3. Criterios de Aprobación Humana (Decisión de Alto Impacto)
+Como se estableció en la Pre-entrega 1, la priorización del backlog no es delegable. Para asegurar que no se desvíen horas de ingeniería costosas hacia "edge cases", el reporte generado por la célula de agentes entra a una revisión estratégica tripartita.
+Antes de aprobar la creación de un ticket de desarrollo a partir de las sugerencias del Agente 2, el equipo evaluará las iniciativas bajo tres aristas clave:
+Deseabilidad (Alineación Estratégica y Volumen vs. Impacto): ¿El dolor reportado afecta el flujo principal (core) del negocio B2B o los objetivos del trimestre? Se cruza la frecuencia de la queja con el perfil de los clientes afectados. (Ej. Una falla reportada por 3 clientes Enterprise tiene mayor deseabilidad de resolución que una queja menor de 20 usuarios estándar).
+Factibilidad (Viabilidad Técnica Inmediata): ¿Es factible resolverlo con una corrección rápida de interfaz o requiere una refactorización profunda de backend que excede la capacidad del sprint actual?
+Viabilidad (Impacto en el Negocio): ¿El costo de oportunidad de resolver este hallazgo se justifica frente a otras iniciativas del roadmap estratégico?
+
+

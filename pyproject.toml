@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "orquestador"
+version = "0.1.0"
+description = "Ciclo mensual de métricas UX para Magneto"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "langgraph>=0.2",
+    "openpyxl>=3.1",
+    "pydantic>=2",
+]
+
+[project.scripts]
+orquestador = "orquestador.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

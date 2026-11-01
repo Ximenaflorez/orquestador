@@ -1,0 +1,28 @@
+﻿Pre-entrega 1: Sección 1 del Blueprint de Célula Híbrida
+Alumna: Ximena Álvarez Flórez Perfil: UX/UI B2B Lead
+Proceso elegido: Consolidación de métricas UX y tipificación de feedback cualitativo B2B
+1. Descripción operativa del proceso (40%)
+El proceso actual consiste en la extracción, unificación y categorización manual de la retroalimentación de los usuarios B2B y las métricas de uso de la plataforma, para generar el reporte de estado de experiencia de usuario y documentar los hallazgos.
+Quién lo ejecuta hoy: Este proceso lo ejecuta de forma centralizada y manual un único rol: la Líder UX B2B (mi rol actual).
+Con qué frecuencia: El proceso tiene una frecuencia mensual. Se realiza al cierre de cada ciclo para armar el reporte de KPIs de experiencia de usuario.
+Qué decisiones requiere en el camino: El proceso es una cadena de decisiones manuales que incluye:
+Selección y filtrado de fuentes: Ingresar a tres plataformas distintas (Google Analytics, Superset para analítica interna y Tally para encuestas) y decidir qué rango de datos e interacciones son válidas para el mes en curso.
+Cruce cuantitativo: Extraer métricas como CSAT, CES y volumen de ingresos, y decidir en qué celdas de la tabla de KPIs mensual consolidada deben ubicarse.
+Análisis de sentimiento (NLP humano): Leer uno a uno los comentarios de texto libre provenientes de Tally y decidir la intención del usuario (si es un promotor, un usuario neutral o un detractor visiblemente molesto).
+Tipificación del dolor: Frente a un comentario negativo, decidir a qué categoría, módulo o etiqueta del árbol del producto pertenece la queja (ej. "falla en catálogo", "error de perfil", "usabilidad en flujos").
+Registro histórico: Decidir qué observaciones críticas ameritan ser documentadas textualmente en NotebookLM y enviadas mediante un formulario de n8n para tenerlas en cuenta en futuros desarrollos.
+Qué problemas tiene:
+Cuello de botella y dependencia: Al depender exclusivamente de la Líder UX, si hay sobrecarga de trabajo estratégico (ej. diseño de nuevos flujos) o vacaciones, el reporte se retrasa o no se hace.
+Demoras (Datos post-mortem): Al hacerse una vez al mes, la lectura de las quejas críticas se hace sobre datos viejos. Esto genera un retraso inaceptable en el tiempo de respuesta ante "dolores" graves de la plataforma que ocurrieron semanas atrás.
+Errores de transcripción: El "copiar y pegar" constante entre Analytics, Superset, Tally y tablas manuales propicia el error humano en los KPIs.
+Fatiga cognitiva: Leer y clasificar manualmente un alto volumen de usuarios enojados genera desgaste y consume horas que el perfil debería invertir en análisis estratégico, no en data entry y clasificación operativa.
+2. Justificación inicial de la elección (35%)
+Este proceso es un candidato ideal para ser integrado en una célula híbrida justamente por ser una labor operativa "aburrida", altamente repetitiva y que hoy se ejecuta a pulmón.
+Cumple con las características de volumen y frecuencia, pero sobre todo, tiene reglas estables. Las fuentes de entrada de datos siempre son las mismas y las salidas esperadas están completamente estandarizadas (una tabla de métricas y una lista tipificada de problemas). Por un lado, la extracción y volcado de números (CSAT, CES) es una tarea determinista basada en reglas claras que una IA puede procesar en segundos con cero margen de error. Por otro lado, la tipificación de quejas aprovecha el punto fuerte de un agente de IA: el procesamiento masivo de texto y la clasificación semántica de intenciones.
+Delegar este proceso a un agente de IA permite redistribuir el trabajo de manera inteligente: la máquina asume la carpintería operativa (recolectar, leer, etiquetar y ordenar), mientras que el humano recupera horas valiosas para ejercer el juicio clínico y diseñar las soluciones. Es el balance perfecto entre un alcance acotado y una liberación de tiempo de alto valor para el negocio B2B.
+3. Decisión de alto impacto identificada (25%)
+La decisión que no se delega (Human-in-the-loop): La priorización del backlog y la decisión de qué hallazgos cualitativos justifican la creación de un ticket de desarrollo para el próximo sprint técnico.
+Explicación coherente del riesgo: Aunque el agente de IA sea perfectamente capaz de leer un comentario furioso, clasificarlo como "Problema de usabilidad en catálogo B2B" y marcarlo con semáforo rojo, el agente carece de la visión de negocio y del contexto estratégico de la empresa. Si se permitiera que el agente creara automáticamente los tickets en el tablero de los desarrolladores basado en la gravedad de las quejas, el riesgo financiero y operativo sería altísimo. La IA podría desviar horas de ingeniería valiosísimas para atender a una minoría de usuarios muy ruidosos o solucionar "casos de borde" (edge cases) que no impactan el core del negocio, yendo en contra del roadmap estratégico. El error no se podría deshacer con un simple "perdón", ya que los desarrolladores habrían invertido tiempo (dinero) en programar algo equivocado. Por esto, la IA debe limitarse a compilar y proponer las tipificaciones, pero es obligatoria la revisión de la Líder UX para ejercer la empatía estratégica y decidir si ese dolor detectado amerita realmente una inversión de rediseño o código.
+
+
+
