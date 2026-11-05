@@ -131,7 +131,7 @@
   tr.lectura td { color: var(--md-sys-color-on-surface-variant); }
   #decision { width: min(640px, calc(100% - 32px)); }
   #forma-decision { display: grid; gap: 12px; }
-  #tipificacion .tarjetas, #historico .tarjetas, #backlog .tarjetas, #excluidos .tarjetas { display: none; }
+  #tipificacion .tarjetas, #historico .tarjetas, #backlog .tarjetas, #excluidos .tarjetas, #por-mes .tarjetas { display: none; }
   .asa { display: none; width: 32px; height: 4px; margin: 0; border-radius: var(--md-sys-shape-corner-full); background: var(--md-sys-color-outline); }
   #hoja[hidden] { display: none; }
   #hoja { position: fixed; inset: 0; z-index: 30; }
@@ -178,13 +178,23 @@
       box-shadow: 1px 0 0 var(--md-sys-color-outline-variant);
     }
     #por-mes table.informe tr.total th:first-child { background: var(--md-sys-color-secondary-container); }
-    #tipificacion, #historico, #backlog, #excluidos { overflow: visible; }
-    #tipificacion table, #historico table, #backlog table, #excluidos table { display: none; }
-    #tipificacion .tarjetas, #historico .tarjetas, #backlog .tarjetas, #excluidos .tarjetas { display: grid; gap: 12px; }
+    #por-mes, #tipificacion, #historico, #backlog, #excluidos { overflow: visible; }
+    #por-mes table, #tipificacion table, #historico table, #backlog table, #excluidos table { display: none; }
+    #por-mes .tarjetas, #tipificacion .tarjetas, #historico .tarjetas, #backlog .tarjetas, #excluidos .tarjetas { display: grid; gap: 12px; }
+    #por-mes .periodo .titulo, #por-mes .periodo .nombre, #por-mes .periodo .valores, #por-mes .periodo .lectura, #por-mes .periodo .muestra { margin: 0; }
+    #por-mes .periodo .cubre { margin: 0; color: var(--md-sys-color-on-surface-variant); }
+    #por-mes .periodo .bloque { display: grid; gap: 4px; }
+    #por-mes .periodo .nombre { font-weight: 500; }
+    #por-mes .periodo .valores, #por-mes .periodo .muestra { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+    #por-mes .periodo .etiqueta { color: var(--md-sys-color-on-surface-variant); }
+    #por-mes .periodo .total { padding-top: 12px; border-top: 1px solid var(--md-sys-color-outline-variant); }
+    #por-mes .periodo .lectura { color: var(--md-sys-color-on-surface-variant); }
     .tarjeta { display: grid; gap: 12px; padding: 16px; background: var(--md-sys-color-surface-container-low); color: var(--md-sys-color-on-surface); border-radius: var(--md-sys-shape-corner-medium); }
     #tipificacion .tarjeta { cursor: pointer; }
     #tipificacion .tarjeta .hallazgo { pointer-events: auto; cursor: pointer; color: inherit; font-weight: 500; }
     .tarjeta .cabeza-tarjeta { display: flex; gap: 12px; align-items: flex-start; }
+    .tarjeta .cabeza-tarjeta md-checkbox, .marcar-todos md-checkbox { flex: 0 0 18px; width: 18px; height: 18px; min-width: 18px; margin-top: 3px; }
+    .tarjeta .cabeza-tarjeta .texto { flex: 1 1 auto; min-width: 0; }
     .tarjeta .texto { margin: 0; font-weight: 500; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden; }
     .tarjeta .ticket { color: var(--md-sys-color-primary); font-weight: 500; text-decoration: none; }
     .tarjeta .fecha { color: var(--md-sys-color-on-surface-variant); }
@@ -629,7 +639,15 @@ function tablaPorMes(items, corte, periodo) {
   const filaTotal = `<tr class="total"><th>Total</th>${visibles.map((columna) => metricas.map((metrica) => `<td>${valorCelda(totalDe(columna, metrica), metrica)}</td>`).join("")).join("")}</tr>`;
   const filaLectura = `<tr class="lectura"><th></th>${visibles.map((columna) => metricas.map((metrica) => `<td>${esc(lectura(totalDe(columna, metrica), metrica))}</td>`).join("")).join("")}</tr>`;
   const filaMuestra = `<tr><th>Cuántas personas evaluaron</th>${visibles.map((columna) => metricas.map((metrica) => { const total = totalDe(columna, metrica); return `<td>${total ? total.n : ""}</td>`; }).join("")).join("")}</tr>`;
-  return `<table class="informe"><thead><tr><th rowspan="2"></th>${mesesCabeza}</tr><tr>${metricasCabeza}</tr></thead><tbody>${ordenP.map(filaArea).join("")}${filaTotal}${filaLectura}${filaMuestra}</tbody></table>`;
+  const par = (item, metrica) => `<span><span class="etiqueta">${esc(metrica)}</span> ${esc(valorCelda(item, metrica) || "—")}</span>`;
+  const tarjetas = visibles.map((columna) => {
+    const cubre = corte !== "mes" ? `<p class="cubre md-typescale-body-small">${esc(mesesQueCubre(columna.meses))}</p>` : "";
+    const areas = ordenP.map((pestana) => `<div class="bloque"><p class="nombre">${esc(nombres[pestana])}</p><p class="valores md-typescale-body-medium">${metricas.map((metrica) => par(leer(columna, pestana, metrica), metrica)).join("")}</p></div>`).join("");
+    const lecturas = metricas.map((metrica) => lectura(totalDe(columna, metrica), metrica)).filter(Boolean).map((texto) => esc(texto)).join("<br>");
+    const muestras = metricas.map((metrica) => { const total = totalDe(columna, metrica); return `<span><span class="etiqueta">${esc(metrica)}</span> ${total ? total.n : "—"}</span>`; }).join("");
+    return `<article class="tarjeta periodo"><h4 class="titulo md-typescale-title-medium">${esc(columna.titulo)}</h4>${cubre}${areas}<div class="bloque total"><p class="nombre">Total</p><p class="valores md-typescale-body-medium">${metricas.map((metrica) => par(totalDe(columna, metrica), metrica)).join("")}</p><p class="lectura md-typescale-body-small">${lecturas}</p></div><div class="bloque"><p class="nombre">Cuántas personas evaluaron</p><p class="muestra md-typescale-body-medium">${muestras}</p></div></article>`;
+  }).join("");
+  return `<table class="informe"><thead><tr><th rowspan="2"></th>${mesesCabeza}</tr><tr>${metricasCabeza}</tr></thead><tbody>${ordenP.map(filaArea).join("")}${filaTotal}${filaLectura}${filaMuestra}</tbody></table><div class="tarjetas">${tarjetas}</div>`;
 }
 function tablaTipificacion(items) {
   if (!items || !items.length) return "<p class=\"vacio\">Este mes todavía no tiene incidentes. Corre el ciclo después de guardar.</p>";
