@@ -1,6 +1,16 @@
 # Orquestador
 
-Ciclo mensual de métricas UX para Magneto. Toma las encuestas de CSAT y CES, calcula el total y el histórico, agrupa los comentarios que se repiten y deja decidir cuáles hallazgos se quedan y cuáles se van. Los que se quedan se pueden enviar a Jira.
+El orquestador cierra el mes de métricas UX de Magneto sin leer las encuestas una por una. La corrida es una vez al mes. La página lee el Excel de ese mes, saca CSAT y CES, y arma el mes y el total. Los comentarios de la pregunta abierta pasan por un modelo de lenguaje, parecido a pedirle a NotebookLM que junte lo que la gente repite. Esa lectura se resuelve con la API key de Gemini.
+
+## Qué lee del Excel
+
+Cada mes llega un libro `feedback_response_AAAA-MM.xlsx` con tres hojas: `Creacion de Vacantes`, `Catalogo` y `Gestion de Vacantes`. En cada hoja hay `DATE`, `CSAT`, `CES` y `PREGUNTA ABIERTA`. Catálogo además trae `CSAT 2`.
+
+De las columnas numéricas la página saca los datos del mes y el total. Calcula CSAT y CES por área, el total del mes y el histórico de los meses ya corridos. Esos promedios no los inventa el modelo: salen de las respuestas del Excel. En la consulta se ven en Total e histórico.
+
+`PREGUNTA ABIERTA` sigue otro camino. El programa junta los comentarios iguales y, con la clave de Gemini, une los que dicen lo mismo con otras palabras. Después el modelo escribe, para cada grupo, una síntesis de hasta dos líneas, el módulo y la etiqueta. El resultado es la lista de hallazgos del mes. La líder decide cuáles se quedan y cuáles se van. Los que se quedan se pueden enviar a Jira.
+
+La clave va en `MODEL_API_KEY` y es la API key de Gemini creada en AI Studio. La corrida llama esa API. Sin esa clave, CSAT, CES y el total se calculan igual, y los comentarios quedan en revisión humana, sin gasto. Si el costo del modelo llega a 3 USD, se cortan las llamadas que faltan.
 
 La consulta se abre en el navegador. En el celular, Total e histórico y los listados de hallazgos se ven como tarjetas. En escritorio siguen siendo tablas.
 
@@ -45,9 +55,7 @@ También se puede indicar otro archivo, siempre que el mes del nombre coincida:
 uv run orquestador correr --mes 2026-07 --archivo datos\meses\feedback_response_2026-07.xlsx
 ```
 
-El ciclo lee el libro, calcula las métricas, agrupa la voz del cliente y escribe el resultado en `salidas/AAAA-MM/`. Si no hay `MODEL_API_KEY`, no llama al modelo: las métricas se calculan igual y los comentarios quedan para revisión, con costo 0. El gasto de modelo se corta al llegar a 3 USD.
-
-El libro trae tres hojas: `Creacion de Vacantes`, `Catalogo` y `Gestion de Vacantes`. Cada una tiene `DATE`, `CSAT`, `CES` y `PREGUNTA ABIERTA`. Catálogo además tiene `CSAT 2`.
+Ese comando es la corrida del mes. Lee el Excel, calcula el mes y el total, pasa los comentarios de la pregunta abierta por Gemini y escribe el resultado en `salidas/AAAA-MM/`.
 
 ## Configuración
 
