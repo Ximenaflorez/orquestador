@@ -10,7 +10,6 @@ La corrida es una vez al mes. La página lee el Excel de ese mes y, en Python, s
 
 ## ⚡ Enlaces Rápidos
 * **Demostración Interactiva:** [ximenaflorez.github.io/orquestador](https://ximenaflorez.github.io/orquestador/). Es una copia de solo lectura: subir el Excel, guardar Se queda o Se va y enviar a Jira responden en el servidor local.
-* **Documentación del Portafolio:** [Caso de Producto en Portafolio](https://ximenaflorez.github.io/Portafolio2026/trabajos/caso-05-orquestador-reglas/)
 
 ---
 
