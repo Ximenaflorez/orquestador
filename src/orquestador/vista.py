@@ -675,7 +675,7 @@ function tablaTipificacion(items) {
   if (!pendientes.length) return "<p class=\\"vacio\\">Los que se quedan están en Tipificados y los que se van, en Excluidos.</p>";
   const cuerpo = pendientes.map((item) => {
     const titulo = item.sintesis || item.comentario;
-    return `<tr><td>${esc(textoFecha(item))}</td><td class="sintesis"><button type="button" class="hallazgo" data-id="${esc(item.id)}" data-abrir="1">${esc(titulo)}</button></td><td>${esc(item.modulo || "")}</td><td>${esc(item.etiqueta || "")}</td><td><span class="luz md-typescale-label-medium ${esc(item.criticidad)}">${esc(item.criticidad || "sin dato")}</span></td><td>${item.conteo ?? 0}</td><td class="ojo">${botonHallazgos()}</td><td><div class="decision"><md-filled-button type="button" data-id="${esc(item.id)}" data-resultado="aceptado" data-motivo="${esc(item.motivo || "")}">Se queda</md-filled-button><md-outlined-button type="button" data-id="${esc(item.id)}" data-resultado="rechazado" data-motivo="${esc(item.motivo || "")}">Se va</md-outlined-button></div></td></tr>${filaHallazgos(item)}`;
+    return `<tr><td>${esc(textoFecha(item))}</td><td class="sintesis"><button type="button" class="hallazgo" data-id="${esc(item.id)}" data-abrir="1">${esc(titulo)}</button></td><td>${esc(item.modulo || "")}</td><td>${esc(item.etiqueta || "")}</td><td><span class="luz md-typescale-label-medium ${esc(item.criticidad)}">${esc(textoCriticidad(item.criticidad))}</span></td><td>${item.conteo ?? 0}</td><td class="ojo">${botonHallazgos()}</td><td><div class="decision"><md-filled-button type="button" data-id="${esc(item.id)}" data-resultado="aceptado" data-motivo="${esc(item.motivo || "")}">Se queda</md-filled-button><md-outlined-button type="button" data-id="${esc(item.id)}" data-resultado="rechazado" data-motivo="${esc(item.motivo || "")}">Se va</md-outlined-button></div></td></tr>${filaHallazgos(item)}`;
   }).join("");
   const tarjetas = pendientes.map(tarjetaTipificacion).join("");
   return `<table><thead><tr><th>Fecha</th><th>Síntesis</th><th>Módulo</th><th>Etiqueta</th><th>Criticidad</th><th>Veces</th><th class="ojo"></th><th></th></tr></thead><tbody>${cuerpo}</tbody></table><div class="tarjetas">${tarjetas}</div>`;
@@ -683,10 +683,14 @@ function tablaTipificacion(items) {
 function textoFecha(item) {
   return item.mes ? nombreMes(item.mes) : "";
 }
+function textoCriticidad(valor) {
+  const nombres = {verde: "baja", amarillo: "media", rojo: "alta"};
+  return nombres[valor] || valor || "sin dato";
+}
 function tarjetaTipificacion(item) {
   const titulo = item.sintesis || item.comentario || "";
   const lista = lineasHallazgo(item).map((texto) => `<li>${esc(texto)}</li>`).join("");
-  return `<article class="tarjeta"><span class="fecha md-typescale-label-medium">${esc(textoFecha(item))}</span><button type="button" class="hallazgo" data-id="${esc(item.id)}" data-abrir="1">${esc(titulo)}</button><div class="meta md-typescale-label-medium"><span class="luz ${esc(item.criticidad)}">${esc(item.criticidad || "sin dato")}</span><span>${item.conteo ?? 0}</span><span>${esc(item.modulo || "Sin definir")}</span><span>${esc(item.etiqueta || "Sin definir")}</span><span class="ojo">${botonHallazgos()}</span></div><div class="detalle" hidden><p class="origen">Hallazgos</p><ul>${lista}</ul></div></article>`;
+  return `<article class="tarjeta"><span class="fecha md-typescale-label-medium">${esc(textoFecha(item))}</span><button type="button" class="hallazgo" data-id="${esc(item.id)}" data-abrir="1">${esc(titulo)}</button><div class="meta md-typescale-label-medium"><span class="luz ${esc(item.criticidad)}">${esc(textoCriticidad(item.criticidad))}</span><span>${item.conteo ?? 0}</span><span>${esc(item.modulo || "Sin definir")}</span><span>${esc(item.etiqueta || "Sin definir")}</span><span class="ojo">${botonHallazgos()}</span></div><div class="detalle" hidden><p class="origen">Hallazgos</p><ul>${lista}</ul></div></article>`;
 }
 async function ponerOpciones(select, valores, actual) {
   const elegido = actual || "";
@@ -810,7 +814,7 @@ function marcaTarjeta(item) {
 function tarjetaLista(item, conDecision, marca) {
   const titulo = item.sintesis || item.comentario || "";
   const veces = item.conteo == null || item.conteo === "" ? "" : `<span>${item.conteo}</span>`;
-  return `<article class="tarjeta"><div class="cabeza-tarjeta">${marca || ""}<p class="texto">${esc(titulo)}</p></div><div class="meta md-typescale-label-medium"><span class="luz ${esc(item.criticidad)}">${esc(item.criticidad || "sin dato")}</span>${veces}<span>${esc(item.mes || "")}</span><span>${esc(item.modulo || "Sin definir")}</span><span>${esc(item.etiqueta || "Sin definir")}</span><span class="ojo">${botonOjo()}</span></div>${detalleTarjeta(item, conDecision)}</article>`;
+  return `<article class="tarjeta"><div class="cabeza-tarjeta">${marca || ""}<p class="texto">${esc(titulo)}</p></div><div class="meta md-typescale-label-medium"><span class="luz ${esc(item.criticidad)}">${esc(textoCriticidad(item.criticidad))}</span>${veces}<span>${esc(item.mes || "")}</span><span>${esc(item.modulo || "Sin definir")}</span><span>${esc(item.etiqueta || "Sin definir")}</span><span class="ojo">${botonOjo()}</span></div>${detalleTarjeta(item, conDecision)}</article>`;
 }
 function barraTarjetas(conSeleccion) {
   const seleccion = conSeleccion ? `<label class="marcar-todos md-typescale-label-medium"><md-checkbox touch-target="wrapper" id="jira-todos-tarjetas" aria-label="Seleccionar los que se quedan"></md-checkbox>Seleccionar los que se quedan</label>` : "";
@@ -823,21 +827,21 @@ function conTarjetas(tabla, items, conDecision, marcaDe, conSeleccion) {
 function tablaExcluidos(items) {
   if (!items || !items.length) return "<p class=\\"vacio\\">Todavía no hay casos excluidos.</p>";
   const filas = ordenarHallazgos(items);
-  const filasHtml = filas.map((item) => filaConOjo(`<td>${esc(item.mes)}</td><td>${esc(item.modulo)}</td><td>${esc(item.etiqueta || "")}</td><td><span class="luz md-typescale-label-medium ${esc(item.criticidad)}">${esc(item.criticidad || "sin dato")}</span></td><td>${esc(item.sintesis || "")}</td>`, item)).join("");
+  const filasHtml = filas.map((item) => filaConOjo(`<td>${esc(item.mes)}</td><td>${esc(item.modulo)}</td><td>${esc(item.etiqueta || "")}</td><td><span class="luz md-typescale-label-medium ${esc(item.criticidad)}">${esc(textoCriticidad(item.criticidad))}</span></td><td>${esc(item.sintesis || "")}</td>`, item)).join("");
   const tabla = `<table class="listado"><thead><tr>${cabezaOrden("fecha", "Mes")}<th>Módulo</th><th>Etiqueta</th>${cabezaOrden("criticidad", "Criticidad")}<th>Síntesis</th><th class="ojo"></th></tr></thead><tbody>${filasHtml}</tbody></table>`;
   return conTarjetas(tabla, filas, true);
 }
 function tablaHistorico(items) {
   if (!items || !items.length) return "<p class=\\"vacio\\">Todavía no hay casos que se queden.</p>";
   const filas = ordenarHallazgos(items);
-  const filasHtml = filas.map((item) => filaConOjo(`${celdaJira(item)}<td>${esc(item.mes)}</td><td>${esc(item.modulo)}</td><td>${esc(item.etiqueta)}</td><td><span class="luz md-typescale-label-medium ${esc(item.criticidad)}">${esc(item.criticidad || "sin dato")}</span></td><td>${esc(item.sintesis || "")}</td><td>${item.conteo ?? ""}</td>`, item, false)).join("");
+  const filasHtml = filas.map((item) => filaConOjo(`${celdaJira(item)}<td>${esc(item.mes)}</td><td>${esc(item.modulo)}</td><td>${esc(item.etiqueta)}</td><td><span class="luz md-typescale-label-medium ${esc(item.criticidad)}">${esc(textoCriticidad(item.criticidad))}</span></td><td>${esc(item.sintesis || "")}</td><td>${item.conteo ?? ""}</td>`, item, false)).join("");
   const tabla = `<table class="listado"><thead><tr><th class="marca"><md-checkbox touch-target="wrapper" id="jira-todos" aria-label="Seleccionar los que se quedan"></md-checkbox></th>${cabezaOrden("fecha", "Mes")}<th>Módulo</th><th>Etiqueta</th>${cabezaOrden("criticidad", "Criticidad")}<th>Síntesis</th><th>Conteo</th><th class="ojo"></th></tr></thead><tbody>${filasHtml}</tbody></table>`;
   return conTarjetas(tabla, filas, false, marcaTarjeta, true);
 }
 function tablaBacklog(items) {
   if (!items || !items.length) return "<p class=\\"vacio\\">Todavía no hay casos en el backlog.</p>";
   const filas = ordenarHallazgos(items);
-  const filasHtml = filas.map((item) => filaConOjo(`<td class="marca">${item.jira && item.jira.clave ? `<a href="${esc(item.jira.url || "")}" target="_blank" rel="noopener">${esc(item.jira.clave)}</a>` : ""}</td><td>${esc(item.mes)}</td><td>${esc(item.modulo)}</td><td>${esc(item.etiqueta)}</td><td><span class="luz md-typescale-label-medium ${esc(item.criticidad)}">${esc(item.criticidad || "sin dato")}</span></td><td>${esc(item.sintesis || "")}</td><td>${item.conteo ?? ""}</td>`, item)).join("");
+  const filasHtml = filas.map((item) => filaConOjo(`<td class="marca">${item.jira && item.jira.clave ? `<a href="${esc(item.jira.url || "")}" target="_blank" rel="noopener">${esc(item.jira.clave)}</a>` : ""}</td><td>${esc(item.mes)}</td><td>${esc(item.modulo)}</td><td>${esc(item.etiqueta)}</td><td><span class="luz md-typescale-label-medium ${esc(item.criticidad)}">${esc(textoCriticidad(item.criticidad))}</span></td><td>${esc(item.sintesis || "")}</td><td>${item.conteo ?? ""}</td>`, item)).join("");
   const tabla = `<table class="listado"><thead><tr><th class="marca">Ticket</th>${cabezaOrden("fecha", "Mes")}<th>Módulo</th><th>Etiqueta</th>${cabezaOrden("criticidad", "Criticidad")}<th>Síntesis</th><th>Conteo</th><th class="ojo"></th></tr></thead><tbody>${filasHtml}</tbody></table>`;
   return conTarjetas(tabla, filas, true, (item) => item.jira && item.jira.clave ? `<a class="ticket" href="${esc(item.jira.url || "")}" target="_blank" rel="noopener">${esc(item.jira.clave)}</a>` : "");
 }
